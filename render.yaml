@@ -1,0 +1,16 @@
+# Render Blueprint: deploys the dashboard as a free web service.
+# In Render: New → Blueprint → pick this repository. Render reads this file and creates the service.
+# The dashboard reads the Parquet snapshot in data_snapshot/ (the DuckDB file is not in git).
+services:
+  - type: web
+    name: pollen-radar-sweden
+    runtime: python
+    plan: free
+    region: frankfurt                 # closest Render region to Sweden
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --chdir dashboard app:server --workers 1 --timeout 120
+    healthCheckPath: /
+    autoDeploy: true                  # redeploy on every push to the main branch
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.14.8                 # same as .python-version / local

@@ -1,0 +1,9 @@
+# Connection to the local DuckDB file (no passwords needed).
+# Run dbt from the dbt/ folder: cd dbt; uv run dbt build
+polen:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: ../data/polen.duckdb
+      threads: 4

@@ -1,0 +1,198 @@
+/* Pollen Radar Sweden – dashboard style (Dash loads files in assets/ automatically).
+   The chart colours come from the validated palette in charts.py (colour-blind safe, same as the notebooks);
+   this file styles the frame around them: page, header, tabs, cards, filters and text. */
+:root {
+  --page: #f4f5f2;            /* soft warm grey page, so the white cards stand out */
+  --surface: #ffffff;         /* cards and charts */
+  --surface-tint: #f8faff;    /* very light blue for hover and table headers */
+  --ink: #0b0b0b;
+  --ink-secondary: #52514e;
+  --muted: #898781;
+  --border: rgba(11, 11, 11, 0.08);
+  --accent: #2a78d6;          /* palette blue (categorical slot 1) */
+  --accent-strong: #1c5cab;   /* darker step of the same blue ramp, for headings */
+  --accent-soft: #cde2fb;     /* lightest step of the blue ramp */
+  --business: #b8481f;        /* dark orange text for the Business label (readable on white) */
+  --business-line: #d95926;   /* deeper step of the palette orange: lines on the Business tabs */
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 2px 8px rgba(16, 24, 40, 0.05);
+  --radius: 12px;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page { max-width: 1240px; margin: 0 auto; padding: 20px 20px 32px; }
+
+/* ---------------- Header: title + tagline left, data status + "Update data" button right ---------------- */
+.header {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 14px 20px; margin-bottom: 18px;
+}
+.header h1 { margin: 0; font-size: 24px; font-weight: 750; letter-spacing: -0.01em; color: var(--ink); }
+.update-box { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: 13px; }
+.update-info { color: var(--ink-secondary); }
+.update-btn {
+  background: var(--accent); color: #ffffff; border: 1px solid var(--accent); border-radius: 8px;
+  padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s;
+}
+.update-btn:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+.update-btn:disabled { background: var(--surface); color: var(--muted); border-color: var(--border); cursor: not-allowed; }
+.update-ok { color: #1a7f4e; font-weight: 600; }
+.update-behind { color: var(--business); font-weight: 600; }
+.update-error { color: #b42318; }
+
+/* ---------------- Tabs ---------------- */
+/* Group labels over the tabs: same 8 equal columns as the tabs.
+   Columns 1–2 = Why this matters, Pollen calendar (no label) · 3 = Customers (Weather & air) · 4–7 = Business ·
+   8 = Pollen now (no label) */
+.tab-groups { display: grid; grid-template-columns: repeat(8, 1fr); margin-bottom: 6px; }
+.tab-group { text-align: center; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+  padding-bottom: 4px; border-bottom: 2px solid; margin: 0 4px; }
+.tab-group.customers { grid-column: 3 / 4; color: var(--accent); border-color: var(--accent); }
+.tab-group.business { grid-column: 4 / 8; color: var(--business); border-color: var(--business-line); }
+
+/* Tab bar: underline style instead of Dash's grey boxes. All 8 tabs exactly the same width, so they line up
+   with the 8 label columns. Only the tab buttons: the direct children of the dcc.Tabs bar (className "tabs") */
+.tabs { border-bottom: 1px solid var(--border) !important; background: transparent !important; }
+.tabs > .tab {
+  flex: 1 1 0 !important; width: auto !important; min-width: 0;
+  background: transparent !important; border: none !important; border-bottom: 3px solid transparent !important;
+  padding: 10px 6px !important; color: var(--ink-secondary); font-size: 14px; font-weight: 600;
+  transition: color 0.15s, background 0.15s;
+}
+.tabs > .tab:hover { color: var(--ink); background: var(--surface-tint) !important; }
+.tabs > .tab--selected { color: var(--accent-strong) !important; border-bottom-color: var(--accent) !important; }
+/* Business tabs (Pharmacies → Retail): selected and hover in the Business orange instead of blue */
+.tabs > .business-tab:hover { background: #fff4ee !important; }
+.tabs > .business-tab--selected { color: var(--business) !important; border-bottom-color: var(--business-line) !important; }
+
+/* Content of each tab */
+.tab-body { padding: 20px 0 0; }
+.pitch { color: var(--accent-strong); font-size: 21px; font-weight: 750; letter-spacing: -0.01em; margin-bottom: 16px; text-align: left; }
+.section-title { font-size: 15px; font-weight: 700; color: var(--ink); margin: 24px 0 10px; padding-left: 10px;
+  border-left: 3px solid var(--accent); text-align: left; }
+
+/* ---------------- Cards: KPIs and charts ---------------- */
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 14px; }
+.kpi-row:has(> .kpi:nth-child(3):last-child) { grid-template-columns: repeat(3, 1fr); }   /* rows with 3 cards */
+.kpi {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 16px 18px; border-top: 3px solid var(--accent);
+}
+/* Business tabs (Pharmacies, Tourism, Events, Retail): orange top line, same orange as the "Business" label */
+.tab-body.business .kpi { border-top-color: var(--business-line); }
+.kpi-value { font-size: 28px; font-weight: 750; color: var(--ink); letter-spacing: -0.01em; }
+.kpi-label { font-size: 13px; color: var(--ink-secondary); margin-top: 4px; line-height: 1.4; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 10px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+
+/* ---------------- Filters (dropdowns, date picker) in one row above the charts ---------------- */
+.filter-row { display: flex; gap: 14px; margin-bottom: 14px; text-align: left; }
+.filter { width: 220px; }
+.filter label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--muted); margin-bottom: 5px; }
+
+/* ---------------- Plant photo cards (Pollen now tab) ---------------- */
+/* Always in their original colours; pollen types in season or with an alert get a blue border */
+.photo-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 16px; }
+.photo-card {
+  background: var(--surface); border: 2px solid transparent; border-radius: var(--radius); overflow: hidden;
+  box-shadow: var(--shadow); transition: border-color 0.2s, transform 0.2s;
+}
+.photo-card:hover { transform: translateY(-2px); }
+.photo-card.selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft), var(--shadow); }
+/* Two photos side by side: whole plant | flowers */
+.photo-img { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+.photo-card img { display: block; width: 100%; height: 130px; object-fit: cover; }
+/* Plant type badge (Tree / Herb) in the top-left corner */
+.photo-type {
+  position: absolute; top: 8px; left: 8px; padding: 2px 9px; border-radius: 10px;
+  background: rgba(255, 255, 255, 0.92); color: var(--ink); font-size: 11px; font-weight: 600;
+}
+/* Name over the photo: dark band at the bottom so white text is readable on any image */
+.photo-label {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: 20px 12px 7px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+  display: flex; justify-content: space-between; align-items: baseline; text-align: left;
+}
+.photo-name { font-weight: 700; font-size: 15px; color: #ffffff; }
+.photo-swedish { font-size: 14px; font-style: italic; color: #ffffff; }
+.photo-sub { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-secondary); padding: 6px 12px; }
+
+/* ---------------- Pollen alert bar (Pollen now tab) as a traffic light ---------------- */
+/* green = no season now or soon · yellow = a season starts within 14 days · red = in season / pollen forecast */
+.alert-bar { border: 1px solid; border-left-width: 8px; border-radius: var(--radius); padding: 26px 24px; margin-bottom: 14px;
+  font-size: 15px; color: var(--ink); text-align: left; line-height: 1.55; box-shadow: var(--shadow); }
+.alert-bar > div:first-child { font-size: 18px; margin-bottom: 2px; }   /* the status line (🟢 / 🟡 / 🔴) stands out */
+.alert-line { font-size: 17px; margin-top: 4px; }   /* the alert itself, e.g. '🌳 Birch in about 2 weeks …' */
+.alert-bar.green { background: #eef8f2; border-color: #1baf7a; }
+.alert-bar.yellow { background: #fff7e0; border-color: #eda100; }
+.alert-bar.red { background: #fdeeee; border-color: #e34948; }
+.alert-note { font-size: 13.5px; color: var(--ink-secondary); margin-top: 4px; }
+
+/* "Alerts on your phone" line under the alert bar (Pollen now tab): one line, easy to spot */
+.subscribe-box { display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  background: var(--surface); border: 1px solid var(--accent-soft); border-radius: var(--radius); padding: 22px 24px;
+  margin-bottom: 18px; text-align: left; font-size: 14.5px; color: var(--ink-secondary); box-shadow: var(--shadow); }
+.subscribe-text { font-size: 18px; line-height: 1.8; }   /* the call to action, easy to read */
+/* QR code on the right: scanning it with the phone camera opens the city's ntfy channel */
+.subscribe-qr { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0;
+  font-size: 11.5px; color: var(--muted); }
+.subscribe-qr img { width: 96px; height: 96px; background: #ffffff; padding: 4px; border-radius: 8px;
+  border: 1px solid var(--border); }
+.subscribe-box b { color: var(--ink); font-weight: 600; }
+.subscribe-box a { color: var(--accent-strong); font-weight: 600; }
+.subscribe-topic { background: var(--surface-tint); border: 1px solid var(--accent-soft); border-radius: 6px;
+  padding: 2px 8px; color: var(--accent-strong); font-weight: 700; user-select: all; }   /* one click selects it all */
+
+/* Demo button under the phone box: send the selected alert to the phones (local only) */
+.send-row { display: flex; align-items: center; gap: 12px; margin: -6px 0 18px; text-align: left; font-size: 14px; }
+.send-btn { background: var(--accent); color: #ffffff; border: 1px solid var(--accent); border-radius: 8px;
+  padding: 9px 16px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+.send-btn:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+.send-btn:disabled { background: var(--surface); color: var(--muted); border-color: var(--border); cursor: not-allowed; }
+.send-ok { color: #1a7f4e; font-weight: 600; }
+.send-error { color: #b42318; font-weight: 600; }
+
+/* Weak-data warning (Pharmacies tab) */
+.warning { color: #8a5a00; font-size: 13px; margin-bottom: 8px; text-align: left; min-height: 0; }
+
+/* ---------------- A/B test ideas (Retail tab): one row per test ---------------- */
+/* scrolls sideways on narrow screens instead of the page */
+.test-table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow); overflow-x: auto; }
+.test-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
+.test-table th { font-size: 11px; font-weight: 700; color: var(--accent-strong); text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 12px 14px; background: var(--surface-tint); border-bottom: 1px solid var(--border); white-space: nowrap; }
+.test-table td { padding: 11px 14px; color: var(--ink); vertical-align: top; border-bottom: 1px solid var(--border); }
+.test-table tr:last-child td { border-bottom: none; }
+.test-table tbody tr:hover td { background: var(--surface-tint); }
+.test-table .test-name { font-weight: 700; }
+
+/* ---------------- Footer ---------------- */
+.footer { font-size: 12px; color: var(--muted); margin-top: 28px; padding-top: 14px; border-top: 1px solid var(--border);
+  line-height: 1.6; }
+.footer a { color: var(--ink-secondary); }
+
+.muted { color: var(--muted); }
+
+/* ---------------- Phone width: one column ---------------- */
+@media (max-width: 800px) {
+  .page { padding: 12px 16px 24px; }
+  .kpi-row { grid-template-columns: 1fr 1fr; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .photo-row { grid-template-columns: 1fr 1fr; }
+  .test-table { min-width: 900px; }
+  .filter-row { flex-direction: column; }
+  .filter { width: 100%; }
+  .tab-groups { display: none; }   /* the tabs are stacked vertically on a phone, so the columns would not match */
+}

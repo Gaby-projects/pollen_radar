@@ -1,0 +1,95 @@
+version: 2
+
+models:
+  - name: hourly
+    description: >
+      One row per city and hour with pollen, pollution and weather.
+      Key: city + time_utc. Use time_local / hour_local for Swedish time.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [city, time_utc]
+    columns:
+      - name: date_local
+        description: Swedish date of the hour.
+      - name: hour_local
+        description: Swedish hour of the day (0–23).
+        data_tests:
+          - in_range:
+              arguments: {min_value: 0, max_value: 23}
+      - name: temperature_c
+        description: Must exist for every hour (fails if the weather join misses).
+        data_tests: [not_null]
+
+  - name: daily
+    description: >
+      One row per city and Swedish day. Key: city + date_local.
+      Only complete days (n_hours >= 23). Pollen/pollution: avg and max of the hours;
+      precipitation: daily total.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [city, date_local]
+    columns:
+      - name: n_hours
+        description: Hours in the day (24; 23 or 25 when clocks change).
+        data_tests:
+          - in_range:
+              arguments: {min_value: 23, max_value: 25}
+
+  - name: weekly
+    description: >
+      One row per city and ISO week (Monday–Sunday). Key: city + iso_year + iso_week.
+      Built from daily: avg of daily averages, max of daily maximums, total precipitation.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [city, iso_year, iso_week]
+    columns:
+      - name: week_start
+        description: First day of the week in the data (Monday, except partial first week).
+      - name: n_days
+        description: Days in the week with data (7 = complete).
+        data_tests:
+          - in_range:
+              arguments: {min_value: 1, max_value: 7}
+
+  - name: seasons
+    description: >
+      One row per city, pollen type and year. Key: city + pollen_type + year.
+      Season = from the day 5% of the year's pollen has fallen to the day 95% has fallen
+      (cumulative-sum method, based on daily average pollen).
+      The current year only includes data up to yesterday.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [city, pollen_type, year]
+    columns:
+      - name: pollen_type
+        description: alder, birch, grass or mugwort.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["alder", "birch", "grass", "mugwort"]
+      - name: season_start
+        description: First day the running total reaches 5% of the year's total.
+        data_tests: [not_null]
+      - name: peak_date
+        description: Day with the highest daily average pollen.
+        data_tests: [not_null]
+      - name: season_end
+        description: First day the running total reaches 95% of the year's total.
+        data_tests: [not_null]
+      - name: start_week
+        description: ISO week of season_start (used for pharmacy stock planning).
+      - name: season_days
+        description: Season length in days (start to end, both included).
+      - name: peak_pollen
+        description: Highest daily average pollen of the year, grains/m³.
+      - name: year_total
+        description: Sum of daily average pollen over the year (season intensity).
+
+  - name: missing_values
+    description: >
+      Data quality report: missing (NULL) values in the raw tables per city, year and variable.
+      Expected: pollen gaps 2021–2023 outside the season (filled with 0 in staging).
