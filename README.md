@@ -4,6 +4,8 @@
 
 An end-to-end data project: an automated pipeline that collects hourly **pollen, air quality and weather** data for six Swedish cities, models it with **dbt** in **DuckDB**, and serves it in an interactive **Dash (Plotly)** dashboard for people with allergies and for businesses (pharmacies, tourism, outdoor events and retail).
 
+**Live dashboard:** https://pollen-radar-sweden.onrender.com (free plan: the first visit can take ~30–60 s while the server wakes up)
+
 > Portfolio project for a **Data Analyst / Data Engineer** profile.
 
 ---
@@ -192,12 +194,12 @@ uv run python dashboard/app.py
 
 The database (`data/`) and logs are not stored in the repository – step 2 rebuilds them.
 
-**Deployment:** `render.yaml` deploys the dashboard on [Render](https://render.com) (free plan) with `gunicorn`, reading `data_snapshot/`. On the free plan the app sleeps after 15 min without visitors; the first visit then takes ~30–60 s.
+**Deployment:** `render.yaml` deploys the dashboard on [Render](https://render.com) (free plan) with `gunicorn`, reading `data_snapshot/`, live at https://pollen-radar-sweden.onrender.com. On the free plan the app sleeps after 15 min without visitors; the first visit then takes ~30–60 s.
 
 ## Project structure
 
 ```
-Polen_history/
+Pollen_radar/
 ├── ingestion/     # config.py (cities, variables, dates) + ingest.py (APIs → DuckDB raw)
 ├── dbt/           # models/staging, models/marts, tests, macros, profiles.yml
 ├── dashboard/        # app.py (layout, tabs, callbacks), charts.py (Plotly charts), data.py (queries + live API),
@@ -221,7 +223,7 @@ Python · `requests` · pandas · **DuckDB** · **dbt Core** (`dbt-duckdb`) · *
 ## Next steps
 
 - [ ] GitHub Actions: run ingestion + dbt + `pytest` + snapshot export every day (the published dashboard then updates itself)
-- [ ] Publish the dashboard on Render (configuration ready in `render.yaml`)
+- [x] Publish the dashboard on Render: https://pollen-radar-sweden.onrender.com
 - [ ] Optional: validate against Pollenrapporten for specific years; MCP server so AI assistants can query the data
 
 ---
