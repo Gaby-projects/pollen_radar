@@ -6,8 +6,6 @@ An end-to-end data project: an automated pipeline that collects hourly **pollen,
 
 **Live dashboard:** https://pollen-radar-sweden.onrender.com (free plan: the first visit can take ~30–60 s while the server wakes up)
 
-> Portfolio project for a **Data Analyst / Data Engineer** profile.
-
 ---
 
 ## Why this matters
