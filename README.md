@@ -4,7 +4,7 @@
 
 An end-to-end data project: an automated pipeline that collects hourly **pollen, air quality and weather** data for six Swedish cities, models it with **dbt** in **DuckDB**, and serves it in an interactive **Dash (Plotly)** dashboard for people with allergies and for businesses (pharmacies, tourism, outdoor events and retail).
 
-**Live dashboard:** https://pollen-radar-sweden.onrender.com (free plan: the first visit can take ~30–60 s while the server wakes up)
+**Live dashboard:** https://pollen-radar-sweden.onrender.com
 
 ---
 
